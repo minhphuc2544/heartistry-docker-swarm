@@ -1,6 +1,18 @@
 #!/bin/bash
 
-if [ $1 -eq "clone" ]; then
+# Check if an action is provided
+if [ -z "$1" ]; then
+  echo "No action provided. Use 'clone' or 'pull'."
+  exit 1
+fi
+
+# Check if Git is installed
+if ! command -v git &> /dev/null; then
+  echo "Git is not installed. Please install Git and try again."
+  exit 1
+fi
+
+if [ "$1" == "clone" ]; then
   # Define the repositories, their clone URLs, and specific Dockerfile content
   declare -A repos=(
     ["heartistry"]="https://github.com/votranphi/heartistry.git"
@@ -38,7 +50,7 @@ if [ $1 -eq "clone" ]; then
   done
 
   echo "All repositories processed."
-elif [ $1 -eq "pull" ]; then
+elif [ "$1" == "pull" ]; then
   # List of directories containing Git repositories
   repos=("heartistry" "heartistry-task-api" "heartistry-user-api")
 
@@ -63,5 +75,6 @@ elif [ $1 -eq "pull" ]; then
 
   echo "All repositories updated."
 else
-  echo "Invalid action. Only support "clone" or "pull."
+  echo "Invalid action. Use 'clone' or 'pull'."
+  exit 1
 fi
