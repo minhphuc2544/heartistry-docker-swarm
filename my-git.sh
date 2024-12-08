@@ -15,14 +15,12 @@ fi
 if [ "$1" == "clone" ]; then
   # Define the repositories, their clone URLs, and specific Dockerfile content
   declare -A repos=(
-    ["heartistry"]="https://github.com/votranphi/heartistry.git"
     ["heartistry-task-api"]="https://github.com/votranphi/heartistry-task-api.git"
     ["heartistry-user-api"]="https://github.com/votranphi/heartistry-user-api.git"
   )
 
   # Dockerfile content for each repository
   declare -A dockerfiles=(
-    ["heartistry"]="# Dockerfile's content goes here"
     ["heartistry-task-api"]="# Dockerfile's content goes here"
     ["heartistry-user-api"]="# Dockerfile's content goes here"
   )
@@ -52,7 +50,7 @@ if [ "$1" == "clone" ]; then
   echo "All repositories processed."
 elif [ "$1" == "pull" ]; then
   # List of directories containing Git repositories
-  repos=("heartistry" "heartistry-task-api" "heartistry-user-api")
+  repos=("heartistry-task-api" "heartistry-user-api")
 
   # Loop through each repository directory
   for repo in "${repos[@]}"; do
