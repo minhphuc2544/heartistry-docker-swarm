@@ -19,12 +19,6 @@ if [ "$1" == "clone" ]; then
     ["heartistry-user-api"]="https://github.com/votranphi/heartistry-user-api.git"
   )
 
-  # Dockerfile content for each repository
-  declare -A dockerfiles=(
-    ["heartistry-task-api"]="# Dockerfile's content goes here"
-    ["heartistry-user-api"]="# Dockerfile's content goes here"
-  )
-
   # Clone repositories and create Dockerfiles
   for repo_name in "${!repos[@]}"; do
     repo_url="${repos[$repo_name]}"
@@ -36,10 +30,6 @@ if [ "$1" == "clone" ]; then
     # Check if cloning was successful
     if [ $? -eq 0 ]; then
       echo "Repository $repo_name cloned successfully."
-      
-      # Add specific Dockerfile to the cloned directory
-      echo -e "${dockerfiles[$repo_name]}" > "$repo_name/Dockerfile"
-      echo "Dockerfile added to $repo_name."
     else
       echo "Failed to clone $repo_name."
     fi
