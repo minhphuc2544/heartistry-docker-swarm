@@ -5,6 +5,7 @@ services:
   postgres_db:
     build:
       context: ./db/postgres
+    restart: always
     environment:
       POSTGRES_USER: heartistry
       POSTGRES_PASSWORD: heartistry
@@ -36,6 +37,12 @@ services:
       - DATABASE_URL=postgres://heartistry:heartistry@postgres_db:5432/heartistry
       - JWT_SECRET=c66077ac1510b83fbda3822b8007fafb9fdf6e550d13574bfd98164d0328261e
       - TOKEN_EXPIRE_TIME=24h
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_USER=heartistry.service@gmail.com
+      - MAIL_PASSWORD=buevjbrngdzaobip
+      - MAIL_FROM=noreply@heartistry.com
+      - MAIL_PORT=465
+      - MAIL_SECURE=465
     networks:
       custom_network:
         ipv4_address: 192.168.1.3
