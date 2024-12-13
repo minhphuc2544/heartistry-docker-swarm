@@ -1,4 +1,4 @@
-cat << EOF > /user-service/Dockerfile
+cat << EOF > ./user-service/Dockerfile
 # Stage 1: Build stage
 FROM node:18 AS builder
 
@@ -37,7 +37,7 @@ EXPOSE 3000
 CMD ["node", "dist/main"]
 EOF
 
-cat << EOF > /task-service/Dockerfile
+cat << EOF > ./task-service/Dockerfile
 # Use Maven image to build the project
 FROM maven:3.8.6-openjdk-18 AS build
 
