@@ -103,6 +103,10 @@ services:
     networks:
       custom_network:
         ipv4_address: 192.168.1.8
+    depends_on:
+      - redis
+      - user-service
+      - task-service
     volumes:
       - ./tyk.standalone.conf:/opt/tyk-gateway/tyk.conf
       - ./apps:/opt/tyk-gateway/apps
