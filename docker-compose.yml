@@ -1,13 +1,11 @@
-version: '3'
-
 services:
   postgres_db:
     build:
       context: ./db/postgres
     environment:
-      - POSTGRES_USER: heartistry
-      - POSTGRES_PASSWORD: heartistry
-      - POSTGRES_DB: heartistry
+      - POSTGRES_USER=heartistry
+      - POSTGRES_PASSWORD=heartistry
+      - POSTGRES_DB=heartistry
     container_name: postgres_db
     networks:
       custom_network:
@@ -75,7 +73,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://192.168.1.4:3306/heartistry
       - SPRING_DATASOURCE_USERNAME=heartistry
       - SPRING_DATASOURCE_PASSWORD=heartistry
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jbdc.Driver
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
       - SPRING_JPA_SHOW_SQL=true
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRINGDOC_SWAGGER_UI_PATH=/swagger-ui.html
@@ -86,6 +84,7 @@ services:
 
 volumes:
   pg-data:
+  mysql-data:
 
 networks:
   custom_network:
