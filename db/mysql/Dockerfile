@@ -1,6 +1,6 @@
 # db/mysql/Dockerfile
 
-FROM mysql:8
+FROM mysql:latest
 
 COPY init.sql /docker-entrypoint-initdb.d/
 
