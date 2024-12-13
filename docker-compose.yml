@@ -81,6 +81,32 @@ services:
     networks:
       custom_network:
         ipv4_address: 192.168.1.6
+    
+  redis:
+    build:
+      context: ./tyk-api-gateway/redis
+      dockerfile: Dockerfile  # Reference to the Dockerfile
+    container_name: tyk-redis
+    ports:
+      - "6379:6379"  # Map the port to the host machine
+    networks:
+      custom_network:
+        ipv4_address: 192.168.1.7
+    restart: always
+
+  tyk-api-gateway:
+    build:
+      context: ./tyk-api-gateway # The directory where the Dockerfile is located
+    container_name: tyk-gateway
+    ports:
+      - "8080:8080"  # Map port 8080 on the host to 8080 on the container
+    networks:
+      custom_network:
+        ipv4_address: 192.168.1.8
+    volumes:
+      - ./tyk.standalone.conf:/opt/tyk-gateway/tyk.conf
+      - ./apps:/opt/tyk-gateway/apps
+    restart: always
 
 volumes:
   pg-data:

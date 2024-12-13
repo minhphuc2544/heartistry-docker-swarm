@@ -1,0 +1,14 @@
+{
+    "name": "user-service",
+    "api_id": "user-service-id",
+    "proxy": {
+      "listen_path": "/user/",
+      "target_url": "http://192.168.1.4:3000/",
+      "strip_listen_path": true
+    },
+    "version_data": {
+      "not_versioned": true
+    },
+    "active": true
+  }
+  
