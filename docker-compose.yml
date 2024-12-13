@@ -14,6 +14,7 @@ services:
       - "5432:5432"
     volumes:
       - pg-data:/var/lib/postgresql/data
+    restart: always
 
   user-service:
     build:
@@ -59,6 +60,7 @@ services:
             - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+    restart: always
 
   task-service:
     build:
@@ -67,7 +69,7 @@ services:
       - mysql_db
     container_name: task-service
     ports:
-      - "8080:8080"
+      - "8000:8000"
     environment:
       - SPRING_APPLICATION_NAME=heartistry-task-api
       - SPRING_DATASOURCE_URL=jdbc:mysql://192.168.1.5:3306/heartistry
@@ -78,6 +80,7 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRINGDOC_SWAGGER_UI_PATH=/swagger-ui.html
       - JWT_SECRET=c66077ac1510b83fbda3822b8007fafb9fdf6e550d13574bfd98164d0328261e
+      - SERVER_PORT=8000
     networks:
       custom_network:
         ipv4_address: 192.168.1.6
@@ -108,9 +111,8 @@ services:
       - user-service
       - task-service
     volumes:
-      - ./tyk.standalone.conf:/opt/tyk-gateway/tyk.conf
-      - ./apps:/opt/tyk-gateway/apps
-    restart: always
+      - ./tyk-api-gateway/tyk.standalone.conf:/opt/tyk-gateway/tyk.conf
+      - ./tyk-api-gateway/apps:/opt/tyk-gateway/apps
 
 volumes:
   pg-data:
