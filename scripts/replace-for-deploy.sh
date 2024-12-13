@@ -1,3 +1,4 @@
+### CHANGE THE MAIL'S TEMPLATES PATH FOR DEPLOYMENT ###
 cat << EOF > ./user-service/src/mail/mail.module.ts
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
