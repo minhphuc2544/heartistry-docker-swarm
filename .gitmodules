@@ -1,6 +1,3 @@
 [submodule "user-service"]
 	path = user-service
 	url = https://github.com/votranphi/heartistry-user-api
-[submodule "task-service"]
-	path = task-service
-	url = https://github.com/votranphi/heartistry-task-api
