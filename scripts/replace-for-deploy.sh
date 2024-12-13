@@ -21,7 +21,7 @@ import { ConfigService } from '@nestjs/config';
           },
         },
         defaults: {
-          from: ,
+          from: \`"Heartistry Service" <\${config.get('MAIL_FROM')}> \`,
         },
         template: {
           dir: join(__dirname, 'templates'),
