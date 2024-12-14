@@ -23,7 +23,7 @@ services:
       - postgres_db
     container_name: user-service
     ports: 
-      - "3000:3000"
+      - "3030:3030"
     environment:
       - DB_TYPE=postgres
       - DB_HOST=192.168.1.3
@@ -38,8 +38,6 @@ services:
       - MAIL_USER=heartistry.service@gmail.com
       - MAIL_PASSWORD=buevjbrngdzaobip
       - MAIL_FROM=noreply@heartistry.com
-      - MAIL_PORT=465
-      - MAIL_SECURE=465
     networks:
       custom_network:
         ipv4_address: 192.168.1.4
@@ -113,6 +111,16 @@ services:
     volumes:
       - ./tyk-api-gateway/tyk.standalone.conf:/opt/tyk-gateway/tyk.conf
       - ./tyk-api-gateway/apps:/opt/tyk-gateway/apps
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
 
 volumes:
   pg-data:
