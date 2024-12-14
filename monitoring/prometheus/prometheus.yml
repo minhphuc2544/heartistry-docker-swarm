@@ -3,12 +3,14 @@ global:
 
 scrape_configs:
   - job_name: "task-service"
+    metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ["192.168.1.6:8000/actuator/prometheus"]
+      - targets: ["192.168.1.6:8000"]
 
   - job_name: "tyk-api-gateway"
+    metrics_path: '/metrics'
     static_configs:
-      - targets: ["192.168.1.8:8080/metrics"]
+      - targets: ["192.168.1.8:8080"]
 
   - job_name: "postgres_exporter"
     static_configs:

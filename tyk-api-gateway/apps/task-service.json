@@ -1,19 +1,21 @@
 {
-    "name": "task-service",
-    "api_id": "task-service-id",
-    "proxy": {
-      "listen_path": "/task/",
-      "target_url": "http://192.168.1.6:8000",
-      "strip_listen_path": true
-    },
-    "version_data": {
-      "not_versioned": true,
-      "versions": {
-        "Default": {           
-          "name": "Default"
-        }
+  "name": "task-service",
+  "api_id": "task-service-id",
+  "proxy": {
+    "listen_path": "/task/",
+    "target_url": "http://192.168.1.6:8000",
+    "strip_listen_path": true
+  },
+  "version_data": {
+    "not_versioned": true,
+    "versions": {
+      "Default": {           
+        "name": "Default"
       }
-    },
-    "active": true,
-    "use_keyless": true
+    }
+  },
+  "active": true,
+  "use_keyless": true,
+  "enable_analytics": true,
+  "enable_prometheus_metrics": true
 } 
