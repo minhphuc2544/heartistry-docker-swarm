@@ -1,15 +1,13 @@
 services:
   postgres_db:
-    build:
-      context: ./db/postgres
+    image: postgres:13.5
     environment:
       - POSTGRES_USER=heartistry
       - POSTGRES_PASSWORD=heartistry
       - POSTGRES_DB=heartistry
     container_name: postgres_db
     networks:
-      custom_network:
-        ipv4_address: 192.168.1.3
+      - overlay_network
     ports:
       - "5432:5432"
     volumes:
@@ -17,8 +15,7 @@ services:
     restart: always
 
   user-service:
-    build:
-      context: ./user-service
+    image: minhphuc2544/user-service:latest
     depends_on:
       - postgres_db
     container_name: user-service
@@ -39,12 +36,10 @@ services:
       - MAIL_PASSWORD=buevjbrngdzaobip
       - MAIL_FROM=noreply@heartistry.com
     networks:
-      custom_network:
-        ipv4_address: 192.168.1.4
+      - overlay_network
 
   mysql_db:
-    build:
-      context: ./db/mysql
+    image: mysql:latest
     environment:
       - MYSQL_DATABASE=heartistry
       - MYSQL_PASSWORD=heartistry
@@ -52,8 +47,7 @@ services:
       - MYSQL_USER=heartistry
     container_name: mysql_db
     networks:
-      custom_network:
-        ipv4_address: 192.168.1.5
+      - overlay_network
     ports:
       - "3306:3306"
     volumes:
@@ -61,8 +55,7 @@ services:
     restart: always
 
   task-service:
-    build:
-      context: ./task-service
+    image: minhphuc2544/task-service:latest
     depends_on:
       - mysql_db
     container_name: task-service
@@ -84,67 +77,106 @@ services:
       - MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=always
       - MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENDPOINT=/actuator/prometheus
     networks:
-      custom_network:
-        ipv4_address: 192.168.1.6
+      - overlay_network
     
   redis:
-    build:
-      context: ./tyk-api-gateway/redis
-      dockerfile: Dockerfile  # Reference to the Dockerfile
+    image: redis:4.0-alpine
     container_name: tyk-redis
     ports:
       - "6379:6379"  # Map the port to the host machine
     networks:
-      custom_network:
-        ipv4_address: 192.168.1.7
+      - overlay_network
     restart: always
 
   tyk-api-gateway:
-    build:
-      context: ./tyk-api-gateway # The directory where the Dockerfile is located
+    image: docker.tyk.io/tyk-gateway/tyk-gateway:latest
     container_name: tyk-gateway
     ports:
       - "8080:8080"  # Map port 8080 on the host to 8080 on the container
     networks:
-      custom_network:
-        ipv4_address: 192.168.1.8
+      - overlay_network
     depends_on:
       - redis
       - user-service
       - task-service
     volumes:
-      - ./tyk-api-gateway/tyk.standalone.conf:/opt/tyk-gateway/tyk.conf
       - ./tyk-api-gateway/apps:/opt/tyk-gateway/apps
+      - ./tyk-api-gateway/tyk.standalone.conf:/opt/tyk-gateway/tyk.conf
+    working_dir: /opt/tyk-gateway
+    environment:
+      - TYK_LOGLEVEL=info
+      - TYK_INSTRUMENTATION=0
+      - TYK_GW_TRACER_ENABLED=false
+      - TYK_GW_HTTPSERVEROPTIONS_ENABLEHTTP2=true
+      - TYK_GW_PROXYENABLEHTTP2=true
+      - TYK_GW_HTTPSERVEROPTIONS_FLUSHINTERVAL=1
+      - TYK_GW_ANALYTICSCONFIG_ENABLEGEOIP=true
+
+  tyk-pump:
+    image: tykio/tyk-pump-docker-pub:v1.7.0-rc1
+    container_name: tyk-pump
+    ports:
+      - 8083:8083
+      - 8084:8084
+    volumes:
+      - ./tyk-pump/pump.conf:/opt/tyk-pump/pump.conf
+    environment:
+      - TYK_INSTRUMENTATION=0
+      - TYK_LOGLEVEL=info
+    depends_on:
+      - redis
+    networks:
+      - overlay_network
+  
+  k6:
+    image: grafana/k6:latest
+    container_name: k6
+    networks:
+      - overlay_network
+    ports:
+      - "6565:6565"
+    volumes:
+      - ./k6/:/scripts
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   prometheus:
     image: prom/prometheus
+    user: root
     container_name: prometheus
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml  # Prometheus configuration
+      - ./monitoring/prometheus/:/prometheus
+      - ./data/prometheus:/data
+    command:
+      - '--config.file=/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/data'
     networks:
-      custom_network:
-        ipv4_address: 192.168.1.9
+      - overlay_network
     depends_on:
       - postgres_exporter
       - mysql_exporter
       - task-service
       - tyk-api-gateway
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana-oss
+    user: root
     container_name: grafana
     ports:
       - "3000:3000"
     volumes:
-      - grafana-data:/var/lib/grafana  # To persist Grafana dashboards
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources/
+      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards/
+      - ./data/grafana/:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_USER=admin  # Default Grafana username
       - GF_SECURITY_ADMIN_PASSWORD=admin  # Default Grafana password
     networks:
-      custom_network:
-        ipv4_address: 192.168.1.10
+      - overlay_network
     depends_on:
       - prometheus
 
@@ -154,8 +186,7 @@ services:
     environment:
       DATA_SOURCE_NAME: postgres://heartistry:heartistry@192.168.1.3:5432/heartistry?sslmode=disable
     networks:
-      custom_network:
-        ipv4_address: 192.168.1.11
+      - overlay_network
     ports:
       - "9187:9187"
     depends_on:
@@ -172,8 +203,7 @@ services:
     ports:
       - 9104:9104
     networks:
-      custom_network:
-        ipv4_address: 192.168.1.12
+      - overlay_network
     depends_on:
       - mysql_db
 
@@ -182,13 +212,9 @@ services:
 volumes:
   pg-data:
   mysql-data:
-  grafana-data:
 
 
 
 networks:
-  custom_network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 192.168.1.0/24
+  overlay_network:
+    driver: overlay
