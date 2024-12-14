@@ -79,6 +79,9 @@ services:
       - SPRINGDOC_SWAGGER_UI_PATH=/swagger-ui.html
       - JWT_SECRET=c66077ac1510b83fbda3822b8007fafb9fdf6e550d13574bfd98164d0328261e
       - SERVER_PORT=8000
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=*
+      - MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED=true
+      - MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENDPOINT=/actuator/prometheus
     networks:
       custom_network:
         ipv4_address: 192.168.1.6
@@ -114,17 +117,60 @@ services:
 
   prometheus:
     image: prom/prometheus
+    container_name: prometheus
     ports:
       - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml  # Prometheus configuration
+    networks:
+      custom_network:
+        ipv4_address: 192.168.1.9
 
   grafana:
     image: grafana/grafana
+    container_name: grafana
     ports:
       - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana  # To persist Grafana dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin  # Default Grafana username
+      - GF_SECURITY_ADMIN_PASSWORD=admin  # Default Grafana password
+    networks:
+      custom_network:
+        ipv4_address: 192.168.1.10
+    depends_on:
+      - prometheus
+
+  postgres_exporter:
+    image: bitnami/postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: postgres://heartistry:heartistry@192.168.1.3:5432/heartistry?sslmode=disable
+    networks:
+      custom_network:
+        ipv4_address: 192.168.1.11
+    ports:
+      - "9187:9187"
+
+  mysql_exporter:
+    image: prom/mysqld-exporter
+    container_name: mysql_exporter
+    ports:
+      - "9104:9104"  # Default port for MySQL Exporter
+    environment:
+      - DATA_SOURCE_NAME=heartistry:heartistry@(192.168.1.5:3306)/  # MySQL credentials and address
+    networks:
+      custom_network:
+        ipv4_address: 192.168.1.12
+
+
 
 volumes:
   pg-data:
   mysql-data:
+  grafana-data:
+
+
 
 networks:
   custom_network:
