@@ -76,6 +76,8 @@ services:
       - MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED=true
       - MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=always
       - MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENDPOINT=/actuator/prometheus
+      - MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED=true
+      - MANAGEMENT_METRICS_TAGS_APPLICATION=heartistry-task-api
     networks:
       - overlay_network
     
@@ -217,4 +219,4 @@ volumes:
 
 networks:
   overlay_network:
-    driver: overlay
+    driver: bridge
