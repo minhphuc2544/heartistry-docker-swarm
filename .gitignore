@@ -1,1 +1,5 @@
-data/
+data/prometheus/*
+data/grafana/*
+
+!data/grafana/folder_keeper.txt
+!data/prometheus/folder_keeper.txt
