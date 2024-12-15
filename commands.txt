@@ -1,0 +1,102 @@
+### INSTALLATIONS ###
+# Clone prepared GitHub repository
+git clone https://github.com/minhphuc2544/heartistry-docker-swarm
+
+# Go into it
+cd heartistry-docker-swarm
+
+
+
+### DEPLOYMENT ###
+# Init the Swarm Cluster and capture the result command
+docker swarm init --advertise-addr 192.168.1.5:2377
+
+# Captured command
+*capture command goes here*
+
+# Run Docker in Docker container and join it to the Leader machine
+docker run -itd --privileged --name worker1 --hostname worker1 docker:20.10-dind
+docker exec -it worker1 sh
+*run the captured command*
+exit
+
+docker run -itd --privileged --name worker2 --hostname worker2 docker:20.10-dind
+docker exec -it worker2 sh
+*run the captured command*
+exit
+
+docker run -itd --privileged --name worker3 --hostname worker3 docker:20.10-dind
+docker exec -it worker3 sh
+*run the captured command*
+exit
+
+# Check Swarm nodes
+docker node ls
+
+# Deploy services on the cluster using Docker compose file
+docker stack deploy -c docker-compose.yml heartistry-stack
+
+# Check overlay network
+docker network ls
+
+# Check services
+docker service ls
+
+# Check services in leader and running containers
+docker ps -a
+docker exec -it worker1 docker ps -a
+docker exec -it worker2 docker ps -a
+docker exec -it worker3 docker ps -a
+
+
+
+### STOP ONE WORKER FOR TESTING ###
+# Stop worker1 for testing
+docker stop worker1
+
+# Checking services again
+docker service ls
+
+# Check services in leader and worker2 again
+docker ps -a
+docker exec -it worker2 docker ps -a
+docker exec -it worker3 docker ps -a
+
+# Start worker1 again
+docker start worker1
+
+# Checking services again
+docker service ls
+
+# Check services in leader and running containers
+docker ps -a
+docker exec -it worker1 docker ps -a
+docker exec -it worker2 docker ps -a
+docker exec -it worker3 docker ps -a
+
+
+
+### DO THE SCALING ###
+# Scale the user-service to 5 containers
+docker service scale heartistry-stack_user-service=5
+
+# Checking services
+docker service ls
+
+# Check services in leader and running containers
+docker ps -a
+docker exec -it worker1 docker ps -a
+docker exec -it worker2 docker ps -a
+docker exec -it worker3 docker ps -a
+
+# Scale the postgres_service to 5 containers
+docker service scale heartistry-stack_postgres_db=5
+
+# Checking services
+docker service ls
+
+# Check services in leader and running containers
+docker ps -a
+docker exec -it worker1 docker ps -a
+docker exec -it worker2 docker ps -a
+docker exec -it worker3 docker ps -a
