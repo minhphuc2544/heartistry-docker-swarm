@@ -148,17 +148,17 @@ services:
       restart_policy:
         condition: on-failure
   
-  k6:
-    image: grafana/k6:latest
-    container_name: k6
-    networks:
-      - overlay_network
-    ports:
-      - "6565:6565"
-    volumes:
-      - ./k6/:/scripts
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+  # k6:
+  #   image: grafana/k6:latest
+  #   container_name: k6
+  #   networks:
+  #     - overlay_network
+  #   ports:
+  #     - "6565:6565"
+  #   volumes:
+  #     - ./k6/:/scripts
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
 
   prometheus:
     image: prom/prometheus
