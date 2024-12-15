@@ -219,4 +219,4 @@ volumes:
 
 networks:
   overlay_network:
-    driver: bridge
+    driver: overlay
