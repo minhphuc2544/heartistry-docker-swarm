@@ -12,7 +12,9 @@ services:
       - "5432:5432"
     volumes:
       - pg-data:/var/lib/postgresql/data
-    restart: always
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   user-service:
     image: minhphuc2544/user-service:latest
@@ -37,6 +39,9 @@ services:
       - MAIL_FROM=noreply@heartistry.com
     networks:
       - overlay_network
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   mysql_db:
     image: mysql:latest
@@ -52,7 +57,9 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-    restart: always
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   task-service:
     image: minhphuc2544/task-service:latest
@@ -80,6 +87,9 @@ services:
       - MANAGEMENT_METRICS_TAGS_APPLICATION=heartistry-task-api
     networks:
       - overlay_network
+    deploy:
+      restart_policy:
+        condition: on-failure
     
   redis:
     image: redis:4.0-alpine
@@ -88,7 +98,9 @@ services:
       - "6379:6379"  # Map the port to the host machine
     networks:
       - overlay_network
-    restart: always
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   tyk-api-gateway:
     image: docker.tyk.io/tyk-gateway/tyk-gateway:latest
@@ -113,6 +125,9 @@ services:
       - TYK_GW_PROXYENABLEHTTP2=true
       - TYK_GW_HTTPSERVEROPTIONS_FLUSHINTERVAL=1
       - TYK_GW_ANALYTICSCONFIG_ENABLEGEOIP=true
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   tyk-pump:
     image: tykio/tyk-pump-docker-pub:v1.7.0-rc1
@@ -129,6 +144,9 @@ services:
       - redis
     networks:
       - overlay_network
+    deploy:
+      restart_policy:
+        condition: on-failure
   
   k6:
     image: grafana/k6:latest
@@ -163,6 +181,9 @@ services:
       - tyk-api-gateway
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   grafana:
     image: grafana/grafana-oss
@@ -181,6 +202,9 @@ services:
       - overlay_network
     depends_on:
       - prometheus
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   postgres_exporter:
     image: bitnami/postgres-exporter
@@ -193,6 +217,9 @@ services:
       - "9187:9187"
     depends_on:
       - postgres_db
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   mysql_exporter:
     image: prom/mysqld-exporter
@@ -208,6 +235,9 @@ services:
       - overlay_network
     depends_on:
       - mysql_db
+    deploy:
+      restart_policy:
+        condition: on-failure
 
 
 
