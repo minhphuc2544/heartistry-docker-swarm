@@ -32,7 +32,7 @@ COPY --from=builder /app/dist ./dist
 RUN npm install --only=production
 
 # Expose port (định nghĩa cổng mà ứng dụng sẽ chạy)
-EXPOSE 3000
+EXPOSE 3030
 
 # Chạy ứng dụng
 CMD ["node", "dist/main"]
@@ -64,7 +64,7 @@ WORKDIR /app
 COPY --from=build /app/target/heartistry-task-api-0.0.1-SNAPSHOT.jar /app
 
 # Expose the application port
-EXPOSE 8080
+EXPOSE 8000
 
 # Command to run the application
 CMD ["java", "-jar", "heartistry-task-api-0.0.1-SNAPSHOT.jar"]
