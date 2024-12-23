@@ -1,4 +1,22 @@
 services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/certs:/etc/ssl/certs
+    depends_on:
+      - user-service
+      - task-service
+    networks:
+      - overlay_network
+    deploy:
+      restart_policy:
+        condition: on-failure
+
   postgres_db:
     image: postgres:13.5
     environment:
@@ -17,7 +35,7 @@ services:
         condition: on-failure
 
   user-service:
-    image: minhphuc2544/user-service:latest
+    build: user-service
     depends_on:
       - postgres_db
     container_name: user-service
@@ -62,7 +80,7 @@ services:
         condition: on-failure
 
   task-service:
-    image: minhphuc2544/task-service:latest
+    build: task-service
     depends_on:
       - mysql_db
     container_name: task-service
@@ -249,4 +267,4 @@ volumes:
 
 networks:
   overlay_network:
-    driver: overlay
+    driver: bridge
