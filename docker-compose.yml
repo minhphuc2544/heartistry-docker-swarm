@@ -2,9 +2,9 @@ services:
   postgres_db:
     image: postgres:13.5
     environment:
-      - POSTGRES_USER=heartistry
-      - POSTGRES_PASSWORD=heartistry
-      - POSTGRES_DB=heartistry
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     container_name: postgres_db
     networks:
       - overlay_network
@@ -12,6 +12,21 @@ services:
       - "5432:5432"
     volumes:
       - pg-data:/var/lib/postgresql/data
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  postgres_exporter:
+    image: bitnami/postgres-exporter
+    container_name: postgres_exporter
+    environment:
+      DATA_SOURCE_NAME: ${DATA_SOURCE_NAME}
+    networks:
+      - overlay_network
+    ports:
+      - "9187:9187"
+    depends_on:
+      - postgres_db
     deploy:
       restart_policy:
         condition: on-failure
@@ -24,19 +39,19 @@ services:
     ports: 
       - "3030:3030"
     environment:
-      - DB_TYPE=postgres
-      - DB_HOST=postgres_db
-      - DB_PORT=5432
-      - DB_USERNAME=heartistry
-      - DB_PASSWORD=heartistry
-      - DB_NAME=heartistry
-      - DATABASE_URL=postgres://heartistry:heartistry@postgres_db:5432/heartistry
-      - JWT_SECRET=c66077ac1510b83fbda3822b8007fafb9fdf6e550d13574bfd98164d0328261e
+      - DB_TYPE=${DB_TYPE}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
       - TOKEN_EXPIRE_TIME=24h
-      - MAIL_HOST=smtp.gmail.com
-      - MAIL_USER=heartistry.service@gmail.com
-      - MAIL_PASSWORD=buevjbrngdzaobip
-      - MAIL_FROM=noreply@heartistry.com
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_FROM=${MAIL_FROM}
     networks:
       - overlay_network
     deploy:
@@ -46,10 +61,10 @@ services:
   mysql_db:
     image: mysql:latest
     environment:
-      - MYSQL_DATABASE=heartistry
-      - MYSQL_PASSWORD=heartistry
-      - MYSQL_ROOT_PASSWORD=verysecret
-      - MYSQL_USER=heartistry
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
     container_name: mysql_db
     networks:
       - overlay_network
@@ -57,6 +72,24 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  mysql_exporter:
+    image: prom/mysqld-exporter
+    container_name: mysql_exporter
+    command: 
+     - --config.my-cnf=/cfg/.my.cnf
+     - --mysqld.address=mysql_db:3306
+    volumes:
+      - "./db_exporter/mysql_exporter/.mysql.cnf:/cfg/.my.cnf"
+    ports:
+      - 9104:9104
+    networks:
+      - overlay_network
+    depends_on:
+      - mysql_db
     deploy:
       restart_policy:
         condition: on-failure
@@ -70,14 +103,14 @@ services:
       - "8000:8000"
     environment:
       - SPRING_APPLICATION_NAME=heartistry-task-api
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql_db:3306/heartistry
-      - SPRING_DATASOURCE_USERNAME=heartistry
-      - SPRING_DATASOURCE_PASSWORD=heartistry
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
       - SPRING_JPA_SHOW_SQL=true
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRINGDOC_SWAGGER_UI_PATH=/swagger-ui.html
-      - JWT_SECRET=c66077ac1510b83fbda3822b8007fafb9fdf6e550d13574bfd98164d0328261e
+      - JWT_SECRET=${JWT_SECRET}
       - SERVER_PORT=8000
       - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=*
       - MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED=true
@@ -147,18 +180,6 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-  
-  # k6:
-  #   image: grafana/k6:latest
-  #   container_name: k6
-  #   networks:
-  #     - overlay_network
-  #   ports:
-  #     - "6565:6565"
-  #   volumes:
-  #     - ./k6/:/scripts
-  #   extra_hosts:
-  #     - "host.docker.internal:host-gateway"
 
   prometheus:
     image: prom/prometheus
@@ -168,7 +189,7 @@ services:
       - "9090:9090"
     volumes:
       - ./monitoring/prometheus/:/prometheus
-      - ./data/prometheus:/data
+      - prometheus-data:/data
     command:
       - '--config.file=/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/data'
@@ -194,7 +215,7 @@ services:
     volumes:
       - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources/
       - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards/
-      - ./data/grafana/:/var/lib/grafana
+      - grafana-data:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_USER=admin  # Default Grafana username
       - GF_SECURITY_ADMIN_PASSWORD=admin  # Default Grafana password
@@ -206,44 +227,25 @@ services:
       restart_policy:
         condition: on-failure
 
-  postgres_exporter:
-    image: bitnami/postgres-exporter
-    container_name: postgres_exporter
-    environment:
-      DATA_SOURCE_NAME: postgres://heartistry:heartistry@postgres_db:5432/heartistry?sslmode=disable
-    networks:
-      - overlay_network
-    ports:
-      - "9187:9187"
-    depends_on:
-      - postgres_db
-    deploy:
-      restart_policy:
-        condition: on-failure
-
-  mysql_exporter:
-    image: prom/mysqld-exporter
-    container_name: mysql_exporter
-    command: 
-     - --config.my-cnf=/cfg/.my.cnf
-     - --mysqld.address=mysql_db:3306
-    volumes:
-      - "./db_exporter/mysql_exporter/.mysql.cnf:/cfg/.my.cnf"
-    ports:
-      - 9104:9104
-    networks:
-      - overlay_network
-    depends_on:
-      - mysql_db
-    deploy:
-      restart_policy:
-        condition: on-failure
+  # k6:
+  #   image: grafana/k6:latest
+  #   container_name: k6
+  #   networks:
+  #     - overlay_network
+  #   ports:
+  #     - "6565:6565"
+  #   volumes:
+  #     - ./k6/:/scripts
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
 
 
 
 volumes:
   pg-data:
   mysql-data:
+  prometheus-data:
+  grafana-data:
 
 
 
