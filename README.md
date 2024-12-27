@@ -68,6 +68,10 @@ After successful deployment:
 - Grafana Monitoring WebUI: [http://<host_ip>:3000](http://<host_ip>:3000)
 - Prometheus Query/Health Check WebUI: [http://<host_ip>:9090](http://<host_ip>:9090)
 
+# License
+
+This project is licensed under the [Apache License 2.0](LICENSE). See the `LICENSE` file for details.
+
 # Credits
 Special thanks to our lecturer - [Le Anh Tuan](https://github.com/tuan-devops), University of Information Technology (UIT), Vietnam National University, Ho Chi Minh City (VNU-HCM). The group members are:
 - Vo Tran Phi (Student ID: 22521081)  
