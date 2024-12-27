@@ -1,5 +1,10 @@
 # Deploy Heartistry's services using Docker Swarm
 
+![Repo Size](https://img.shields.io/github/repo-size/minhphuc2544/heartistry-docker-swarm)
+![Last Commit](https://img.shields.io/github/last-commit/minhphuc2544/heartistry-docker-swarm)
+![Open Issues](https://img.shields.io/github/issues/minhphuc2544/heartistry-docker-swarm)
+![License](https://img.shields.io/github/license/minhphuc2544/heartistry-docker-swarm)
+
 ![Docker](https://img.shields.io/badge/docker-ready-blue?logo=docker)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-v13.5-blue?logo=postgresql)
 ![MySQL](https://img.shields.io/badge/MySQL-Latest-blue?logo=mysql)
@@ -11,7 +16,6 @@
 ![Java](https://img.shields.io/badge/Java-Task--Service-red?logo=java)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-Task--Service-green?logo=spring)
 ![Metrics](https://img.shields.io/badge/Metrics-Prometheus/Grafana-orange?logo=prometheus)
-![License](https://img.shields.io/github/license/minhphuc2544/heartistry-docker-swarm)
 
 This project provides a comprehensive solution for deploying the Heartistry application using Docker Swarm. Heartistry is a multi-service platform that integrates user and task management, utilizes robust databases (MySQL and PostgreSQL), and includes advanced API management and monitoring tools. This deployment approach leverages Docker Swarm's orchestration capabilities to ensure scalability, high availability, and efficient resource utilization.
 
