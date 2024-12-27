@@ -1,4 +1,15 @@
 # Heartistry's services simple deployment via Docker Compose
+
+![Docker](https://img.shields.io/badge/docker-ready-blue?logo=docker)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-v13.5-blue?logo=postgresql)
+![MySQL](https://img.shields.io/badge/MySQL-Latest-blue?logo=mysql)
+![NGINX](https://img.shields.io/badge/nginx-ready-brightgreen?logo=nginx)
+![Node.js](https://img.shields.io/badge/Node.js-User--Service-brightgreen?logo=node.js)
+![Java](https://img.shields.io/badge/Java-Task--Service-red?logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-Task--Service-green?logo=spring)
+![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI/CD-blue?logo=githubactions)
+![License](https://img.shields.io/github/license/minhphuc2544/heartistry-docker-swarm)
+
 This project provides a simple solution for deploying the Heartistry application using Docker Compose.
 
 # Descriptions
