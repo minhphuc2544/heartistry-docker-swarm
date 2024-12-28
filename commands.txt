@@ -33,6 +33,9 @@ exit
 # Check Swarm nodes
 docker node ls
 
+# Export env vars to current bash session
+export $(grep -v '^#' .env | xargs)
+
 # Deploy services on the cluster using Docker compose file
 docker stack deploy -c docker-compose.yml heartistry-stack
 
