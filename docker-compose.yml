@@ -52,6 +52,7 @@ services:
       - MAIL_USER=${MAIL_USER}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - MAIL_FROM=${MAIL_FROM}
+      - SERVER_PORT=3030
     networks:
       - overlay_network
     deploy:
